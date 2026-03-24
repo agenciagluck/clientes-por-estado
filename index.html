@@ -1,7 +1,17 @@
+<!--
+  🔗 CONFIGURAÇÃO DO GOOGLE SHEETS
+  Substitua a constante SHEET_URL no JavaScript pela URL da sua planilha publicada.
+  Como publicar: Planilha > Arquivo > Compartilhar > Publicar na web > CSV > Copiar link
+  
+  Formato esperado da planilha:
+  - Coluna A: Sigla do estado (ex: SP)
+  - Coluna B: Nome do estado (ex: São Paulo)
+  - Coluna C: Nome do cliente (ex: Alexandre São Paulo)
+  Cada linha = 1 cliente. Primeira linha pode ser cabeçalho (será ignorada automaticamente).
+-->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<!-- DADOS GERADOS AUTOMATICAMENTE PELO SCRIPT convert_to_html.py -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clientes por Estado</title>
@@ -38,7 +48,6 @@
     flex-direction: column;
   }
 
-  /* ── HEADER ── */
   .header {
     background: var(--white);
     border-bottom: 1px solid var(--border);
@@ -94,7 +103,6 @@
     white-space: nowrap;
   }
 
-  /* ── SEARCH ── */
   .search-wrap {
     background: var(--white);
     border-bottom: 1px solid var(--border);
@@ -154,7 +162,6 @@
     font-weight: 500;
   }
 
-  /* ── MAIN ── */
   .main {
     flex: 1;
     max-width: 1280px;
@@ -163,7 +170,6 @@
     padding: 32px 40px 40px;
   }
 
-  /* ── GRID VIEW ── */
   #grid-view { display: block; }
 
   .states-grid {
@@ -172,7 +178,6 @@
     gap: 16px;
   }
 
-  /* ── CARD ── */
   .state-card {
     background: var(--white);
     border: 1.5px solid var(--border);
@@ -216,12 +221,7 @@
 
   .state-card.hidden { display: none; }
 
-  .card-icon {
-    font-size: 1.1rem;
-    line-height: 1;
-    position: relative;
-    z-index: 1;
-  }
+  .card-icon { font-size: 1.1rem; line-height: 1; position: relative; z-index: 1; }
 
   .card-sigla {
     font-size: 1.75rem;
@@ -264,7 +264,6 @@
     color: var(--white);
   }
 
-  /* ── DETAIL VIEW ── */
   #detail-view {
     display: none;
     animation: fadeInRight 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
@@ -301,17 +300,6 @@
     border-radius: 50%;
   }
 
-  .detail-header::before {
-    content: '';
-    position: absolute;
-    right: 40px;
-    bottom: -50px;
-    width: 120px;
-    height: 120px;
-    background: rgba(255,255,255,0.04);
-    border-radius: 50%;
-  }
-
   .back-btn {
     display: inline-flex;
     align-items: center;
@@ -331,10 +319,7 @@
     z-index: 1;
   }
 
-  .back-btn:hover {
-    background: rgba(255,255,255,0.25);
-    transform: translateX(-2px);
-  }
+  .back-btn:hover { background: rgba(255,255,255,0.25); transform: translateX(-2px); }
 
   .detail-state-info {
     display: flex;
@@ -359,23 +344,10 @@
     flex-shrink: 0;
   }
 
-  .detail-state-text h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-  }
+  .detail-state-text h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+  .detail-state-text p { font-size: 0.82rem; opacity: 0.8; margin-top: 4px; font-weight: 400; }
 
-  .detail-state-text p {
-    font-size: 0.82rem;
-    opacity: 0.8;
-    margin-top: 4px;
-    font-weight: 400;
-  }
-
-  .detail-body {
-    padding: 28px 36px 32px;
-  }
+  .detail-body { padding: 28px 36px 32px; }
 
   .detail-body h3 {
     font-size: 0.8rem;
@@ -386,12 +358,7 @@
     margin-bottom: 16px;
   }
 
-  .clients-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .clients-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
 
   .client-item {
     display: flex;
@@ -405,20 +372,9 @@
     animation: fadeInUp 0.3s ease both;
   }
 
-  .client-item:hover {
-    background: var(--indigo-light);
-    border-color: rgba(79,70,229,0.2);
-    transform: translateX(3px);
-  }
+  .client-item:hover { background: var(--indigo-light); border-color: rgba(79,70,229,0.2); transform: translateX(3px); }
 
-  .client-number {
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    width: 18px;
-    text-align: right;
-    flex-shrink: 0;
-  }
+  .client-number { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); width: 18px; text-align: right; flex-shrink: 0; }
 
   .client-avatar {
     width: 36px;
@@ -431,31 +387,176 @@
     font-weight: 700;
     color: var(--white);
     flex-shrink: 0;
-    letter-spacing: 0;
   }
 
-  .client-name {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-primary);
-    flex: 1;
-  }
+  .client-name { font-size: 0.875rem; font-weight: 500; color: var(--text-primary); flex: 1; }
 
-  /* ── NO RESULTS ── */
-  .no-results {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-muted);
-    display: none;
-  }
-
+  .no-results { text-align: center; padding: 60px 20px; color: var(--text-muted); display: none; }
   .no-results.visible { display: block; }
-
-  .no-results svg { margin-bottom: 12px; opacity: 0.4; }
-
   .no-results p { font-size: 0.9rem; font-weight: 500; }
 
-  /* ── FOOTER ── */
+  /* ── Loading State ── */
+  #loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    gap: 20px;
+    animation: fadeInUp 0.3s ease both;
+  }
+
+  .spinner {
+    width: 44px;
+    height: 44px;
+    border: 3.5px solid var(--indigo-light);
+    border-top-color: var(--indigo);
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+  }
+
+  .loading-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: -0.01em;
+  }
+
+  .loading-sub {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: -10px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Error State ── */
+  #error-state {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    animation: fadeInUp 0.3s ease both;
+  }
+
+  #error-state.visible { display: flex; }
+
+  .error-card {
+    background: var(--white);
+    border: 1.5px solid #FEE2E2;
+    border-radius: var(--radius);
+    padding: 36px 40px;
+    text-align: center;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(239,68,68,0.08);
+  }
+
+  .error-icon {
+    font-size: 2.4rem;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  .error-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #DC2626;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .error-msg {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 22px;
+  }
+
+  .error-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 22px;
+    text-align: left;
+    line-height: 1.7;
+    border: 1px solid var(--border);
+  }
+
+  .error-hint strong { color: var(--text-secondary); }
+
+  .retry-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--indigo);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 10px 22px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .retry-btn:hover { background: #4338CA; transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+  /* ── Demo banner ── */
+  .demo-banner {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: #FFFBEB;
+    border: 1.5px solid #FDE68A;
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    font-size: 0.78rem;
+    color: #92400E;
+    font-weight: 500;
+    animation: fadeInUp 0.3s ease both;
+  }
+
+  .demo-banner.visible { display: flex; }
+  .demo-banner svg { flex-shrink: 0; color: #D97706; }
+
+  /* ── Footer sync info ── */
+  .footer-sync {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .footer-sync-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .sync-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10B981;
+    display: inline-block;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  .sync-dot.demo { background: #F59E0B; animation: none; }
+  .sync-dot.error { background: #EF4444; animation: none; }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
   footer {
     background: var(--white);
     border-top: 1px solid var(--border);
@@ -466,22 +567,10 @@
     font-weight: 400;
   }
 
-  /* ── ANIMATIONS ── */
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeInRight { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
 
-  @keyframes fadeInRight {
-    from { opacity: 0; transform: translateX(24px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 1100px) {
-    .states-grid { grid-template-columns: repeat(4, 1fr); }
-  }
-
+  @media (max-width: 1100px) { .states-grid { grid-template-columns: repeat(4, 1fr); } }
   @media (max-width: 860px) {
     .header { padding: 20px 24px 18px; }
     .search-wrap { padding: 12px 24px; top: 85px; }
@@ -490,7 +579,6 @@
     .detail-header { padding: 24px 24px 20px; }
     .detail-body { padding: 20px 24px 24px; }
   }
-
   @media (max-width: 560px) {
     .header-inner { flex-direction: column; align-items: flex-start; gap: 10px; }
     .states-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -502,64 +590,94 @@
 </head>
 <body>
 
-<!-- ── HEADER ── -->
 <header class="header">
   <div class="header-inner">
     <div class="header-text">
       <h1><span class="dot"></span> Clientes por Estado</h1>
-      <p>Clique em um estado para visualizar os clientes cadastrados</p>
+      <p>Selecione um estado para visualizar os clientes cadastrados</p>
     </div>
-    <span class="header-badge" id="total-badge">270 clientes · 27 estados</span>
+    <div class="header-badge" id="total-badge">Carregando...</div>
   </div>
 </header>
 
-<!-- ── SEARCH ── -->
-<div class="search-wrap" id="search-wrap">
+<div class="search-wrap">
   <div class="search-inner">
     <div class="search-box">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
-      <input type="text" id="search-input" placeholder="Buscar por estado ou sigla…" autocomplete="off">
+      <input type="text" id="search-input" placeholder="Buscar estado ou cliente..." autocomplete="off">
     </div>
-    <span class="results-count" id="results-count">27 estados</span>
+    <span class="results-count" id="results-count"></span>
   </div>
 </div>
 
-<!-- ── MAIN ── -->
 <main class="main">
 
-  <!-- GRID VIEW -->
-  <div id="grid-view">
+  <!-- Loading State -->
+  <div id="loading-state">
+    <div class="spinner"></div>
+    <p class="loading-text">Carregando dados da planilha...</p>
+    <p class="loading-sub">Conectando ao Google Sheets</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="error-state">
+    <div class="error-card">
+      <span class="error-icon">⚠️</span>
+      <p class="error-title">Não foi possível carregar os dados</p>
+      <p class="error-msg">Ocorreu um erro ao buscar os dados da planilha. Verifique se a URL está correta e se a planilha está publicada como CSV.</p>
+      <div class="error-hint">
+        <strong>Como publicar sua planilha:</strong><br>
+        1. Abra a planilha no Google Sheets<br>
+        2. Vá em <strong>Arquivo → Compartilhar → Publicar na web</strong><br>
+        3. Selecione a aba desejada e o formato <strong>CSV</strong><br>
+        4. Clique em <strong>Publicar</strong> e copie o link gerado<br>
+        5. Cole o link na constante <strong>SHEET_URL</strong> no código
+      </div>
+      <button class="retry-btn" onclick="loadData()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        Tentar novamente
+      </button>
+    </div>
+  </div>
+
+  <!-- Grid View -->
+  <div id="grid-view" style="display:none;">
+    <div class="demo-banner" id="demo-banner">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      Modo demonstração — dados de exemplo. Substitua <strong style="margin: 0 3px;">SHEET_URL</strong> pela URL real da sua planilha para carregar dados reais.
+    </div>
     <div class="states-grid" id="states-grid"></div>
     <div class="no-results" id="no-results">
-      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
       <p>Nenhum estado encontrado para "<span id="search-term"></span>"</p>
     </div>
   </div>
 
-  <!-- DETAIL VIEW -->
+  <!-- Detail View -->
   <div id="detail-view">
     <div class="detail-panel">
       <div class="detail-header">
-        <button class="back-btn" id="back-btn">
+        <button class="back-btn" onclick="closeDetail()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="15 18 9 12 15 6"/>
           </svg>
-          Voltar aos estados
+          Voltar
         </button>
         <div class="detail-state-info">
           <div class="detail-sigla-badge" id="detail-sigla"></div>
           <div class="detail-state-text">
             <h2 id="detail-nome"></h2>
-            <p id="detail-sub"></p>
+            <p id="detail-count"></p>
           </div>
         </div>
       </div>
       <div class="detail-body">
-        <h3>Lista de clientes</h3>
+        <h3>Lista de Clientes</h3>
         <ul class="clients-list" id="clients-list"></ul>
       </div>
     </div>
@@ -567,155 +685,344 @@
 
 </main>
 
-<!-- ── FOOTER ── -->
 <footer>
-  ⚙️ Dados sincronizados via planilha &nbsp;|&nbsp; Última atualização: <span id="last-update"></span>
+  <div class="footer-sync">
+    <div class="footer-sync-item">
+      <span class="sync-dot" id="sync-dot"></span>
+      <span id="footer-source">🔗 Dados sincronizados via Google Sheets</span>
+    </div>
+    <span style="color: var(--border);">|</span>
+    <div class="footer-sync-item">
+      <span id="footer-update">Última atualização: —</span>
+    </div>
+  </div>
 </footer>
 
 <script>
-const estadosData = {
-  "AC": { "nome": "Acre", "clientes": ["Ana Lima", "Bruno Farias", "Carla Mendes", "Diego Souza", "Elaine Rocha", "Felipe Nunes", "Gabriela Castro", "Henrique Alves", "Isabela Torres", "João Peixoto"] },
-  "AL": { "nome": "Alagoas", "clientes": ["Amanda Ferreira", "Bernardo Costa", "Cíntia Melo", "Daniel Brito", "Eduarda Lins", "Fábio Ramos", "Giovana Barros", "Hugo Cavalcante", "Iara Nascimento", "Júlio Moraes"] },
-  "AP": { "nome": "Amapá", "clientes": ["Alice Pantoja", "Bruno Lobato", "Cristina Viana", "David Macedo", "Elza Corrêa", "Fernando Guimarães", "Graça Figueiredo", "Hélio Andrade", "Iolanda Freitas", "Jonas Pereira"] },
-  "AM": { "nome": "Amazonas", "clientes": ["Adriana Leal", "Benedito Souza", "Claudia Monteiro", "Davi Amazonas", "Eva Ribeiro", "Francisco Teixeira", "Glória Nogueira", "Humberto Sales", "Iris Batista", "Jefferson Pinto"] },
-  "BA": { "nome": "Bahia", "clientes": ["Aline Bahia", "Carlos Santana", "Denise Araújo", "Eduardo Falcão", "Fernanda Queiroz", "Gustavo Leão", "Helena Vieira", "Igor Sampaio", "Juliana Carvalho", "Lucas Borges"] },
-  "CE": { "nome": "Ceará", "clientes": ["Antônia Medeiros", "Breno Aragão", "Cecília Fontes", "Danilo Ximenes", "Evelyn Saraiva", "Filipe Landim", "Geovana Bastos", "Hermes Lima", "Ingrid Pinheiro", "Jorge Sousa"] },
-  "DF": { "nome": "Distrito Federal", "clientes": ["Alexandre Nóbrega", "Beatriz Almeida", "Cláudio Martins", "Débora Fonseca", "Emerson Lopes", "Flávia Cunha", "Gilberto Matos", "Heloísa Rezende", "Ivan Rodrigues", "Jéssica Campos"] },
-  "ES": { "nome": "Espírito Santo", "clientes": ["Adriano Espíndola", "Bruna Pacheco", "Caio Zanetti", "Daniela Tristão", "Ernesto Vasconcelos", "Fernanda Zamprogno", "Gisele Frizera", "Halisson Barbosa", "Ingrid Moreira", "João Feu"] },
-  "GO": { "nome": "Goiás", "clientes": ["Alessandra Goiânia", "Bruno Jalles", "Cristiane Caiado", "Diones Veiga", "Emanuela Quirino", "Fabiano Lacerda", "Giovana Jardim", "Hilton Camargo", "Isadora Bueno", "Jonatan Cruz"] },
-  "MA": { "nome": "Maranhão", "clientes": ["Aldenir Marques", "Benedita Cutrim", "Conceição Veras", "Darlan Matos", "Ednalva Costa", "Fátima Lobato", "Gilmara Furtado", "Hélio Sarney", "Iramar Coelho", "Janete Muniz"] },
-  "MT": { "nome": "Mato Grosso", "clientes": ["Alaor Cuiabá", "Bruna Rondon", "Cleber Tanaka", "Danielle Parecis", "Ednaldo Sinop", "Fabiana Chapada", "Gilson Gaúcho", "Hilária Mato", "Ivone Barbosa", "Jader Campos"] },
-  "MS": { "nome": "Mato Grosso do Sul", "clientes": ["Alcides Campo", "Brenda Grande", "César Dourados", "Dulce Bonito", "Evandro Três Lagoas", "Fabíola Ponta Porã", "Geraldo Naviraí", "Helena Maracaju", "Ivana Coxim", "Josué Corumbá"] },
-  "MG": { "nome": "Minas Gerais", "clientes": ["Afonso Belo", "Brígida Contagem", "Cléber Uberlândia", "Dinalva Juiz de Fora", "Edmar Montes Claros", "Fátima Betim", "Gilmar Ibirité", "Herilda Divinópolis", "Iraci Sete Lagoas", "Jair Governador"] },
-  "PA": { "nome": "Pará", "clientes": ["Agenor Belém", "Benedita Marabá", "Célio Santarém", "Dorinha Castanhal", "Elias Ananindeua", "Fatinha Parauapebas", "Geovane Altamira", "Herivaldo Barcarena", "Iacy Tucuruí", "Jardel Abaetetuba"] },
-  "PB": { "nome": "Paraíba", "clientes": ["Aldenor João Pessoa", "Benedita Campina", "Ceilândia Cajazeiras", "Damião Patos", "Edna Guarabira", "Fátima Sousa", "Gildásio Bayeux", "Heraldo Santa Rita", "Inácio Cabedelo", "Jairo Monteiro"] },
-  "PR": { "nome": "Paraná", "clientes": ["Adriana Curitiba", "Benício Londrina", "Cátia Maringá", "Diogo Cascavel", "Eliete Foz", "Fabiano Ponta Grossa", "Giovana Guarapuava", "Henrique Paranaguá", "Ivete Araucária", "Jonas Campo Mourão"] },
-  "PE": { "nome": "Pernambuco", "clientes": ["Aldair Recife", "Benedita Caruaru", "Claudinho Olinda", "Diva Petrolina", "Erivaldo Paulista", "Fatinha Jaboatão", "Geísa Camaçari", "Hernando Garanhuns", "Irailda Cabo", "Jailton Vitória"] },
-  "PI": { "nome": "Piauí", "clientes": ["Adauto Teresina", "Benedita Parnaíba", "Cícero Floriano", "Dilma Picos", "Eurico Piripiri", "Fátima Barras", "Gilberto Oeiras", "Hermínia Campo Maior", "Iracema Esperantina", "Jairo Pedro II"] },
-  "RJ": { "nome": "Rio de Janeiro", "clientes": ["Alexandre Niterói", "Beatriz Duque", "Carlos Petrópolis", "Denise Nova Iguaçu", "Emerson Volta Redonda", "Fernanda Macaé", "Gustavo Campos", "Helena Cabo Frio", "Igor Angra", "Juliana Nilópolis"] },
-  "RN": { "nome": "Rio Grande do Norte", "clientes": ["Aécio Natal", "Betânia Mossoró", "Claudionor Parnamirim", "Diná Caicó", "Eliana Currais Novos", "Fátima Assu", "Gilmar Pau dos Ferros", "Hermano Nova Cruz", "Ivana São Gonçalo", "Jailma Macaíba"] },
-  "RS": { "nome": "Rio Grande do Sul", "clientes": ["Adriano Porto Alegre", "Betina Caxias", "Clóvis Pelotas", "Deise Canoas", "Erico Santa Maria", "Fabiane Novo Hamburgo", "Gilberto São Leopoldo", "Helena Passo Fundo", "Ivan Gravataí", "Jaqueline Viamão"] },
-  "RO": { "nome": "Rondônia", "clientes": ["Aldenir Porto Velho", "Bruna Ariquemes", "Cléber Ji-Paraná", "Dilma Cacoal", "Eduardo Vilhena", "Fabiana Rolim", "Gilson Jaru", "Heloísa Guajará", "Ivone Ouro Preto", "Joelma Pimenta"] },
-  "RR": { "nome": "Roraima", "clientes": ["Alcindo Boa Vista", "Betânia Rorainópolis", "Cleidimar Caracaraí", "Dilma Mucajaí", "Edmar Iracema", "Fátima Alto Alegre", "Gilberto Cantá", "Helenice Bonfim", "Irene Normandia", "Jailson Pacaraima"] },
-  "SC": { "nome": "Santa Catarina", "clientes": ["Adelar Florianópolis", "Betina Joinville", "Cláudio Blumenau", "Deise Chapecó", "Everton Itajaí", "Fabiana Lages", "Gilmar Criciúma", "Heloísa Jaraguá", "Ivan Balneário", "Jaqueline Tubarão"] },
-  "SP": { "nome": "São Paulo", "clientes": ["Alexandre São Paulo", "Beatriz Campinas", "Carlos Guarulhos", "Daniela Santo André", "Eduardo Ribeirão", "Fernanda São Bernardo", "Gustavo Osasco", "Helena Santos", "Igor Sorocaba", "Juliana Mauá"] },
-  "SE": { "nome": "Sergipe", "clientes": ["Adailton Aracaju", "Benedita Lagarto", "Claudia Itabaiana", "Dilma Estância", "Edmar Tobias", "Fátima Nossa Senhora", "Gilmar Simão Dias", "Helenise Propriá", "Iraci Carmópolis", "Jair Canindé"] },
-  "TO": { "nome": "Tocantins", "clientes": ["Adelmo Palmas", "Betânia Araguaína", "Claudionor Gurupi", "Dilma Porto Nacional", "Eduardo Paraíso", "Fabiana Colinas", "Gilson Guaraí", "Heloísa Dianópolis", "Ivone Miracema", "Jailma Formoso"] }
-};
+  // ─────────────────────────────────────────────────────────────────────────────
+  // 🔗 CONFIGURAÇÃO — Substitua pela URL da sua planilha publicada como CSV
+  //    Arquivo → Compartilhar → Publicar na web → Selecionar aba → CSV → Publicar
+  // ─────────────────────────────────────────────────────────────────────────────
+  const SHEET_URL = https://docs.google.com/spreadsheets/d/e/2PACX-1vQ__NpKU1q9S-J0FCYADsFMq3mwp_klp4SIBOpZtQ2IOk-vXpgQI6TIRVg49W0rlQ/pubhtml;
 
-const avatarColors = [
-  '#4F46E5','#7C3AED','#DB2777','#DC2626','#D97706',
-  '#059669','#0891B2','#2563EB','#9333EA','#C2410C'
-];
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Dados de fallback (modo demonstração) — usados quando SHEET_URL = 'SUA_URL_AQUI'
+  // ─────────────────────────────────────────────────────────────────────────────
+  const FALLBACK_DATA = {
+    "AC": { nome: "Acre", clientes: ["Ana Acre","Bruno Acre","Carlos Acre","Diana Acre","Eduardo Acre","Fernanda Acre","Gabriel Acre","Helena Acre","Igor Acre","Juliana Acre"] },
+    "AL": { nome: "Alagoas", clientes: ["Amanda Alagoas","Bernardo Alagoas","Camila Alagoas","Daniel Alagoas","Elisa Alagoas","Felipe Alagoas","Giovana Alagoas","Henrique Alagoas","Isabela Alagoas","João Alagoas"] },
+    "AM": { nome: "Amazonas", clientes: ["Alice Amazonas","Bruno Amazonas","Clara Amazonas","Diego Amazonas","Eduarda Amazonas","Fábio Amazonas","Gabriela Amazonas","Hugo Amazonas","Ingrid Amazonas","José Amazonas"] },
+    "AP": { nome: "Amapá", clientes: ["André Amapá","Beatriz Amapá","Caio Amapá","Débora Amapá","Emerson Amapá","Flávia Amapá","Gustavo Amapá","Heloísa Amapá","Ivan Amapá","Joana Amapá"] },
+    "BA": { nome: "Bahia", clientes: ["Alexandre Bahia","Bruna Bahia","César Bahia","Daniela Bahia","Erick Bahia","Fabiana Bahia","Guilherme Bahia","Hanna Bahia","Ítalo Bahia","Jéssica Bahia"] },
+    "CE": { nome: "Ceará", clientes: ["Adriano Ceará","Bárbara Ceará","Cláudio Ceará","Denise Ceará","Evandro Ceará","Francine Ceará","Gilberto Ceará","Hortência Ceará","Iara Ceará","Joaquim Ceará"] },
+    "DF": { nome: "Distrito Federal", clientes: ["Afonso DF","Bianca DF","Cristiano DF","Dalila DF","Elton DF","Fátima DF","Geraldo DF","Hilda DF","Ivo DF","Janaína DF"] },
+    "ES": { nome: "Espírito Santo", clientes: ["Antônio ES","Brenda ES","Cícero ES","Dora ES","Eliane ES","Francisco ES","Graça ES","Hélio ES","Irene ES","Júlio ES"] },
+    "GO": { nome: "Goiás", clientes: ["Artur Goiás","Betina Goiás","Cleber Goiás","Dulce Goiás","Edson Goiás","Fernanda Goiás","Gerson Goiás","Hebe Goiás","Inácio Goiás","Joelma Goiás"] },
+    "MA": { nome: "Maranhão", clientes: ["Alisson Maranhão","Bianca Maranhão","Cássio Maranhão","Dênis Maranhão","Elza Maranhão","Fausto Maranhão","Gilda Maranhão","Humberto Maranhão","Ivone Maranhão","Jair Maranhão"] },
+    "MG": { nome: "Minas Gerais", clientes: ["Alessandra MG","Beto MG","Carla MG","Davi MG","Elisa MG","Flávio MG","Gisele MG","Haroldo MG","Iolanda MG","Jeferson MG"] },
+    "MS": { nome: "Mato Grosso do Sul", clientes: ["Alana MS","Bráulio MS","Conceição MS","Dirceu MS","Eleonora MS","Fábio MS","Gláucia MS","Heraldo MS","Ilza MS","Jânio MS"] },
+    "MT": { nome: "Mato Grosso", clientes: ["Abner MT","Berenice MT","Ciro MT","Dinalva MT","Erasmo MT","Filomena MT","Genivaldo MT","Helenice MT","Irineu MT","Jocélia MT"] },
+    "PA": { nome: "Pará", clientes: ["Adão Pará","Benedita Pará","Celso Pará","Dilma Pará","Eudes Pará","Florinda Pará","Genilson Pará","Hermínia Pará","Isadora Pará","Jailson Pará"] },
+    "PB": { nome: "Paraíba", clientes: ["Agripino PB","Bernadete PB","Cláudia PB","Domingos PB","Eunice PB","Firmino PB","Geovana PB","Hilário PB","Ivanildo PB","Jucilene PB"] },
+    "PE": { nome: "Pernambuco", clientes: ["Adilson PE","Benedito PE","Cibele PE","Djalma PE","Edilson PE","Fátima PE","Genildo PE","Hilda PE","Ivanete PE","Jailton PE"] },
+    "PI": { nome: "Piauí", clientes: ["Adelino PI","Benvinda PI","Cícero PI","Dinalva PI","Edivaldo PI","Florência PI","Genésio PI","Hildete PI","Iracema PI","Jailma PI"] },
+    "PR": { nome: "Paraná", clientes: ["Adriana PR","Benedito PR","Cristiane PR","Dirceu PR","Eliane PR","Fábio PR","Gisele PR","Humberto PR","Ivana PR","Jair PR"] },
+    "RJ": { nome: "Rio de Janeiro", clientes: ["Alexandre RJ","Bruna RJ","Carlos RJ","Daniela RJ","Eduardo RJ","Fernanda RJ","Gustavo RJ","Helena RJ","Igor RJ","Juliana RJ"] },
+    "RN": { nome: "Rio Grande do Norte", clientes: ["Adauto RN","Bernadete RN","Cláudio RN","Denise RN","Edmar RN","Flávia RN","Gilmar RN","Hortência RN","Ivanildo RN","Joelma RN"] },
+    "RO": { nome: "Rondônia", clientes: ["Adalberto RO","Benedita RO","Cícero RO","Dilma RO","Edivaldo RO","Florinda RO","Genivaldo RO","Hermínia RO","Isadora RO","Jailson RO"] },
+    "RR": { nome: "Roraima", clientes: ["Agripino RR","Bernadete RR","Cláudia RR","Domingos RR","Eunice RR","Firmino RR","Geovana RR","Hilário RR","Ivanildo RR","Jucilene RR"] },
+    "RS": { nome: "Rio Grande do Sul", clientes: ["Adriano RS","Bárbara RS","Cláudio RS","Denise RS","Evandro RS","Francine RS","Gilberto RS","Hortência RS","Iara RS","Joaquim RS"] },
+    "SC": { nome: "Santa Catarina", clientes: ["Afonso SC","Bianca SC","Cristiano SC","Dalila SC","Elton SC","Fátima SC","Geraldo SC","Hilda SC","Ivo SC","Janaína SC"] },
+    "SE": { nome: "Sergipe", clientes: ["Adilson SE","Benedito SE","Cibele SE","Djalma SE","Edilson SE","Fátima SE","Genildo SE","Hilda SE","Ivanete SE","Jailton SE"] },
+    "SP": { nome: "São Paulo", clientes: ["Alexandre SP","Bruna SP","Carlos SP","Daniela SP","Eduardo SP","Fernanda SP","Gustavo SP","Helena SP","Igor SP","Juliana SP"] },
+    "TO": { nome: "Tocantins", clientes: ["Adão TO","Benedita TO","Celso TO","Dilma TO","Eudes TO","Florinda TO","Genilson TO","Hermínia TO","Isadora TO","Jailson TO"] }
+  };
 
-function getAvatarColor(index) {
-  return avatarColors[index % avatarColors.length];
-}
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Estado global
+  // ─────────────────────────────────────────────────────────────────────────────
+  let estadosData = {};
+  let dataSource = 'loading'; // 'sheets' | 'demo' | 'error'
+  let lastUpdate = null;
 
-function getInitial(name) {
-  return name.trim().charAt(0).toUpperCase();
-}
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Avatar colors
+  // ─────────────────────────────────────────────────────────────────────────────
+  const avatarColors = [
+    '#4F46E5','#7C3AED','#DB2777','#DC2626','#D97706',
+    '#059669','#0891B2','#2563EB','#9333EA','#C026D3'
+  ];
 
-function formatDate(d) {
-  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-}
+  function getAvatarColor(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return avatarColors[Math.abs(hash) % avatarColors.length];
+  }
 
-// Set footer date
-document.getElementById('last-update').textContent = formatDate(new Date());
+  // ─────────────────────────────────────────────────────────────────────────────
+  // UI helpers
+  // ─────────────────────────────────────────────────────────────────────────────
+  function showLoading() {
+    document.getElementById('loading-state').style.display = 'flex';
+    document.getElementById('error-state').classList.remove('visible');
+    document.getElementById('grid-view').style.display = 'none';
+    document.getElementById('detail-view').classList.remove('visible');
+    document.getElementById('detail-view').style.display = 'none';
+    document.getElementById('total-badge').textContent = 'Carregando...';
+  }
 
-const grid = document.getElementById('states-grid');
-const gridView = document.getElementById('grid-view');
-const detailView = document.getElementById('detail-view');
-const searchInput = document.getElementById('search-input');
-const resultsCount = document.getElementById('results-count');
-const noResults = document.getElementById('no-results');
-const searchWrap = document.getElementById('search-wrap');
+  function showError() {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('error-state').classList.add('visible');
+    document.getElementById('grid-view').style.display = 'none';
+    document.getElementById('total-badge').textContent = 'Erro';
+    // Footer
+    const dot = document.getElementById('sync-dot');
+    dot.className = 'sync-dot error';
+    document.getElementById('footer-source').textContent = '⚠️ Falha ao conectar com Google Sheets';
+    document.getElementById('footer-update').textContent = 'Última atualização: —';
+  }
 
-let selectedSigla = null;
+  function showGrid() {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('error-state').classList.remove('visible');
+    document.getElementById('grid-view').style.display = 'block';
+  }
 
-// Build cards
-const siglas = Object.keys(estadosData).sort();
-siglas.forEach((sigla, i) => {
-  const estado = estadosData[sigla];
-  const card = document.createElement('div');
-  card.className = 'state-card';
-  card.dataset.sigla = sigla;
-  card.dataset.nome = estado.nome.toLowerCase();
-  card.style.animationDelay = `${i * 0.03}s`;
-  card.innerHTML = `
-    <span class="card-icon">📍</span>
-    <span class="card-sigla">${sigla}</span>
-    <span class="card-nome">${estado.nome}</span>
-    <span class="card-count">${estado.clientes.length} clientes</span>
-  `;
-  card.addEventListener('click', () => openDetail(sigla));
-  grid.appendChild(card);
-});
+  function updateFooter() {
+    const dot = document.getElementById('sync-dot');
+    const source = document.getElementById('footer-source');
+    const update = document.getElementById('footer-update');
+    const now = new Date();
+    const formatted = now.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+      + ' às ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    lastUpdate = formatted;
+    update.textContent = `Última atualização: ${formatted}`;
 
-function openDetail(sigla) {
-  selectedSigla = sigla;
-  const estado = estadosData[sigla];
+    if (dataSource === 'sheets') {
+      dot.className = 'sync-dot';
+      source.textContent = '🔗 Dados sincronizados via Google Sheets';
+    } else if (dataSource === 'demo') {
+      dot.className = 'sync-dot demo';
+      source.textContent = '🟡 Modo demonstração — dados de exemplo';
+    }
+  }
 
-  // Highlight selected card
-  document.querySelectorAll('.state-card').forEach(c => c.classList.remove('selected'));
-  const selCard = document.querySelector(`.state-card[data-sigla="${sigla}"]`);
-  if (selCard) selCard.classList.add('selected');
+  // ─────────────────────────────────────────────────────────────────────────────
+  // CSV Parser
+  // ─────────────────────────────────────────────────────────────────────────────
+  function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    const result = {};
+    // Detect if first line is a header (Coluna A is not a 2-letter uppercase state code)
+    let startIndex = 0;
+    const firstCell = lines[0].split(',')[0].trim().replace(/"/g, '');
+    if (firstCell.length > 2 || !/^[A-Z]{2}$/.test(firstCell)) {
+      startIndex = 1; // skip header
+    }
 
-  // Populate detail
-  document.getElementById('detail-sigla').textContent = sigla;
-  document.getElementById('detail-nome').textContent = estado.nome;
-  document.getElementById('detail-sub').textContent = `${estado.clientes.length} clientes cadastrados`;
+    for (let i = startIndex; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
 
-  const list = document.getElementById('clients-list');
-  list.innerHTML = '';
-  estado.clientes.forEach((nome, idx) => {
-    const li = document.createElement('li');
-    li.className = 'client-item';
-    li.style.animationDelay = `${idx * 0.04}s`;
-    li.innerHTML = `
-      <span class="client-number">${idx + 1}</span>
-      <div class="client-avatar" style="background:${getAvatarColor(idx)}">${getInitial(nome)}</div>
-      <span class="client-name">${nome}</span>
-    `;
-    list.appendChild(li);
+      // Handle quoted CSV fields
+      const cols = parseCSVLine(line);
+      if (cols.length < 3) continue;
+
+      const sigla = cols[0].trim().toUpperCase();
+      const nome = cols[1].trim();
+      const cliente = cols[2].trim();
+
+      if (!sigla || !nome || !cliente) continue;
+
+      if (!result[sigla]) {
+        result[sigla] = { nome: nome, clientes: [] };
+      }
+      result[sigla].clientes.push(cliente);
+    }
+    return result;
+  }
+
+  function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
+        else { inQuotes = !inQuotes; }
+      } else if (ch === ',' && !inQuotes) {
+        result.push(current);
+        current = '';
+      } else {
+        current += ch;
+      }
+    }
+    result.push(current);
+    return result;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Load Data
+  // ─────────────────────────────────────────────────────────────────────────────
+  async function loadData() {
+    showLoading();
+
+    // Demo mode
+    if (!SHEET_URL || SHEET_URL === 'SUA_URL_AQUI') {
+      await new Promise(r => setTimeout(r, 800)); // simulate loading
+      estadosData = FALLBACK_DATA;
+      dataSource = 'demo';
+      document.getElementById('demo-banner').classList.add('visible');
+      buildCards();
+      updateFooter();
+      showGrid();
+      return;
+    }
+
+    try {
+      const response = await fetch(SHEET_URL);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const text = await response.text();
+      if (!text || text.trim().length === 0) throw new Error('Planilha vazia');
+      estadosData = parseCSV(text);
+      if (Object.keys(estadosData).length === 0) throw new Error('Nenhum dado encontrado');
+      dataSource = 'sheets';
+      document.getElementById('demo-banner').classList.remove('visible');
+      buildCards();
+      updateFooter();
+      showGrid();
+    } catch (err) {
+      console.error('Erro ao carregar planilha:', err);
+      dataSource = 'error';
+      showError();
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Build Cards
+  // ─────────────────────────────────────────────────────────────────────────────
+  function buildCards() {
+    const grid = document.getElementById('states-grid');
+    grid.innerHTML = '';
+
+    const sortedKeys = Object.keys(estadosData).sort();
+    let totalClientes = 0;
+
+    sortedKeys.forEach((sigla, idx) => {
+      const estado = estadosData[sigla];
+      totalClientes += estado.clientes.length;
+
+      const card = document.createElement('div');
+      card.className = 'state-card';
+      card.dataset.sigla = sigla;
+      card.style.animationDelay = `${idx * 0.03}s`;
+      card.innerHTML = `
+        <span class="card-icon">📍</span>
+        <span class="card-sigla">${sigla}</span>
+        <span class="card-nome">${estado.nome}</span>
+        <span class="card-count">${estado.clientes.length} cliente${estado.clientes.length !== 1 ? 's' : ''}</span>
+      `;
+      card.addEventListener('click', () => openDetail(sigla));
+      grid.appendChild(card);
+    });
+
+    // Update badge
+    const totalEstados = sortedKeys.length;
+    document.getElementById('total-badge').textContent =
+      `${totalEstados} estado${totalEstados !== 1 ? 's' : ''} · ${totalClientes} cliente${totalClientes !== 1 ? 's' : ''}`;
+
+    // Update results count
+    document.getElementById('results-count').textContent =
+      `${totalEstados} estado${totalEstados !== 1 ? 's' : ''}`;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Detail View
+  // ─────────────────────────────────────────────────────────────────────────────
+  function openDetail(sigla) {
+    const estado = estadosData[sigla];
+    if (!estado) return;
+
+    // Mark selected card
+    document.querySelectorAll('.state-card').forEach(c => c.classList.remove('selected'));
+    const card = document.querySelector(`.state-card[data-sigla="${sigla}"]`);
+    if (card) card.classList.add('selected');
+
+    document.getElementById('detail-sigla').textContent = sigla;
+    document.getElementById('detail-nome').textContent = estado.nome;
+    document.getElementById('detail-count').textContent =
+      `${estado.clientes.length} cliente${estado.clientes.length !== 1 ? 's' : ''} cadastrado${estado.clientes.length !== 1 ? 's' : ''}`;
+
+    const list = document.getElementById('clients-list');
+    list.innerHTML = '';
+    estado.clientes.forEach((cliente, i) => {
+      const initial = cliente.trim().charAt(0).toUpperCase();
+      const color = getAvatarColor(cliente);
+      const li = document.createElement('li');
+      li.className = 'client-item';
+      li.style.animationDelay = `${i * 0.04}s`;
+      li.innerHTML = `
+        <span class="client-number">${i + 1}</span>
+        <div class="client-avatar" style="background:${color}">${initial}</div>
+        <span class="client-name">${cliente}</span>
+      `;
+      list.appendChild(li);
+    });
+
+    document.getElementById('grid-view').style.display = 'none';
+    const detailView = document.getElementById('detail-view');
+    detailView.style.display = 'block';
+    detailView.classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function closeDetail() {
+    document.querySelectorAll('.state-card').forEach(c => c.classList.remove('selected'));
+    const detailView = document.getElementById('detail-view');
+    detailView.classList.remove('visible');
+    detailView.style.display = 'none';
+    document.getElementById('grid-view').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Search
+  // ─────────────────────────────────────────────────────────────────────────────
+  document.getElementById('search-input').addEventListener('input', function () {
+    const query = this.value.trim().toLowerCase();
+    const cards = document.querySelectorAll('.state-card');
+    let visible = 0;
+
+    cards.forEach(card => {
+      const sigla = card.dataset.sigla.toLowerCase();
+      const nome = estadosData[card.dataset.sigla]?.nome.toLowerCase() || '';
+      const clientes = (estadosData[card.dataset.sigla]?.clientes || []).join(' ').toLowerCase();
+      const match = !query || sigla.includes(query) || nome.includes(query) || clientes.includes(query);
+      card.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+
+    const noResults = document.getElementById('no-results');
+    const resultsCount = document.getElementById('results-count');
+
+    if (query && visible === 0) {
+      noResults.classList.add('visible');
+      document.getElementById('search-term').textContent = this.value.trim();
+      resultsCount.textContent = '0 resultados';
+    } else {
+      noResults.classList.remove('visible');
+      resultsCount.textContent = query
+        ? `${visible} estado${visible !== 1 ? 's' : ''} encontrado${visible !== 1 ? 's' : ''}`
+        : `${visible} estado${visible !== 1 ? 's' : ''}`;
+    }
   });
 
-  // Switch views
-  gridView.style.display = 'none';
-  searchWrap.style.display = 'none';
-  detailView.classList.add('visible');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function closeDetail() {
-  detailView.classList.remove('visible');
-  gridView.style.display = 'block';
-  searchWrap.style.display = 'block';
-  document.querySelectorAll('.state-card').forEach(c => c.classList.remove('selected'));
-  selectedSigla = null;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-document.getElementById('back-btn').addEventListener('click', closeDetail);
-
-// Search
-searchInput.addEventListener('input', () => {
-  const q = searchInput.value.trim().toLowerCase();
-  const cards = document.querySelectorAll('.state-card');
-  let visible = 0;
-
-  cards.forEach(card => {
-    const sigla = card.dataset.sigla.toLowerCase();
-    const nome = card.dataset.nome;
-    const match = sigla.includes(q) || nome.includes(q);
-    card.classList.toggle('hidden', !match);
-    if (match) visible++;
-  });
-
-  resultsCount.textContent = visible === 27 ? '27 estados' : `${visible} estado${visible !== 1 ? 's' : ''} encontrado${visible !== 1 ? 's' : ''}`;
-  noResults.classList.toggle('visible', visible === 0);
-  document.getElementById('search-term').textContent = searchInput.value.trim();
-});
+  // ─────────────────────────────────────────────────────────────────────────────
+  // Init
+  // ─────────────────────────────────────────────────────────────────────────────
+  loadData();
 </script>
 </body>
 </html>
