@@ -395,7 +395,6 @@
   .no-results.visible { display: block; }
   .no-results p { font-size: 0.9rem; font-weight: 500; }
 
-  /* ── Loading State ── */
   #loading-state {
     display: flex;
     flex-direction: column;
@@ -430,7 +429,6 @@
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── Error State ── */
   #error-state {
     display: none;
     flex-direction: column;
@@ -453,26 +451,9 @@
     box-shadow: 0 4px 20px rgba(239,68,68,0.08);
   }
 
-  .error-icon {
-    font-size: 2.4rem;
-    margin-bottom: 14px;
-    display: block;
-  }
-
-  .error-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #DC2626;
-    margin-bottom: 8px;
-    letter-spacing: -0.01em;
-  }
-
-  .error-msg {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: 22px;
-  }
+  .error-icon { font-size: 2.4rem; margin-bottom: 14px; display: block; }
+  .error-title { font-size: 1rem; font-weight: 700; color: #DC2626; margin-bottom: 8px; letter-spacing: -0.01em; }
+  .error-msg { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 22px; }
 
   .error-hint {
     font-size: 0.75rem;
@@ -506,7 +487,6 @@
 
   .retry-btn:hover { background: #4338CA; transform: translateY(-1px); box-shadow: var(--shadow-md); }
 
-  /* ── Demo banner ── */
   .demo-banner {
     display: none;
     align-items: center;
@@ -525,20 +505,8 @@
   .demo-banner.visible { display: flex; }
   .demo-banner svg { flex-shrink: 0; color: #D97706; }
 
-  /* ── Footer sync info ── */
-  .footer-sync {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .footer-sync-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
+  .footer-sync { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .footer-sync-item { display: flex; align-items: center; gap: 5px; }
 
   .sync-dot {
     width: 6px;
@@ -614,14 +582,12 @@
 
 <main class="main">
 
-  <!-- Loading State -->
   <div id="loading-state">
     <div class="spinner"></div>
     <p class="loading-text">Carregando dados da planilha...</p>
     <p class="loading-sub">Conectando ao Google Sheets</p>
   </div>
 
-  <!-- Error State -->
   <div id="error-state">
     <div class="error-card">
       <span class="error-icon">⚠️</span>
@@ -644,7 +610,6 @@
     </div>
   </div>
 
-  <!-- Grid View -->
   <div id="grid-view" style="display:none;">
     <div class="demo-banner" id="demo-banner">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -658,7 +623,6 @@
     </div>
   </div>
 
-  <!-- Detail View -->
   <div id="detail-view">
     <div class="detail-panel">
       <div class="detail-header">
@@ -699,15 +663,8 @@
 </footer>
 
 <script>
-  // ─────────────────────────────────────────────────────────────────────────────
-  // 🔗 CONFIGURAÇÃO — Substitua pela URL da sua planilha publicada como CSV
-  //    Arquivo → Compartilhar → Publicar na web → Selecionar aba → CSV → Publicar
-  // ─────────────────────────────────────────────────────────────────────────────
-  const SHEET_URL = https://docs.google.com/spreadsheets/d/e/2PACX-1vQ__NpKU1q9S-J0FCYADsFMq3mwp_klp4SIBOpZtQ2IOk-vXpgQI6TIRVg49W0rlQ/pubhtml;
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ__NpKU1q9S-J0FCYADsFMq3mwp_klp4SIBOpZtQ2IOk-vXpgQI6TIRVg49W0rlQ/pub?output=csv';
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Dados de fallback (modo demonstração) — usados quando SHEET_URL = 'SUA_URL_AQUI'
-  // ─────────────────────────────────────────────────────────────────────────────
   const FALLBACK_DATA = {
     "AC": { nome: "Acre", clientes: ["Ana Acre","Bruno Acre","Carlos Acre","Diana Acre","Eduardo Acre","Fernanda Acre","Gabriel Acre","Helena Acre","Igor Acre","Juliana Acre"] },
     "AL": { nome: "Alagoas", clientes: ["Amanda Alagoas","Bernardo Alagoas","Camila Alagoas","Daniel Alagoas","Elisa Alagoas","Felipe Alagoas","Giovana Alagoas","Henrique Alagoas","Isabela Alagoas","João Alagoas"] },
@@ -738,16 +695,10 @@
     "TO": { nome: "Tocantins", clientes: ["Adão TO","Benedita TO","Celso TO","Dilma TO","Eudes TO","Florinda TO","Genilson TO","Hermínia TO","Isadora TO","Jailson TO"] }
   };
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Estado global
-  // ─────────────────────────────────────────────────────────────────────────────
   let estadosData = {};
-  let dataSource = 'loading'; // 'sheets' | 'demo' | 'error'
+  let dataSource = 'loading';
   let lastUpdate = null;
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Avatar colors
-  // ─────────────────────────────────────────────────────────────────────────────
   const avatarColors = [
     '#4F46E5','#7C3AED','#DB2777','#DC2626','#D97706',
     '#059669','#0891B2','#2563EB','#9333EA','#C026D3'
@@ -759,9 +710,6 @@
     return avatarColors[Math.abs(hash) % avatarColors.length];
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // UI helpers
-  // ─────────────────────────────────────────────────────────────────────────────
   function showLoading() {
     document.getElementById('loading-state').style.display = 'flex';
     document.getElementById('error-state').classList.remove('visible');
@@ -776,7 +724,6 @@
     document.getElementById('error-state').classList.add('visible');
     document.getElementById('grid-view').style.display = 'none';
     document.getElementById('total-badge').textContent = 'Erro';
-    // Footer
     const dot = document.getElementById('sync-dot');
     dot.className = 'sync-dot error';
     document.getElementById('footer-source').textContent = '⚠️ Falha ao conectar com Google Sheets';
@@ -798,7 +745,6 @@
       + ' às ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     lastUpdate = formatted;
     update.textContent = `Última atualização: ${formatted}`;
-
     if (dataSource === 'sheets') {
       dot.className = 'sync-dot';
       source.textContent = '🔗 Dados sincronizados via Google Sheets';
@@ -808,36 +754,24 @@
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // CSV Parser
-  // ─────────────────────────────────────────────────────────────────────────────
   function parseCSV(text) {
     const lines = text.trim().split('\n');
     const result = {};
-    // Detect if first line is a header (Coluna A is not a 2-letter uppercase state code)
     let startIndex = 0;
     const firstCell = lines[0].split(',')[0].trim().replace(/"/g, '');
     if (firstCell.length > 2 || !/^[A-Z]{2}$/.test(firstCell)) {
-      startIndex = 1; // skip header
+      startIndex = 1;
     }
-
     for (let i = startIndex; i < lines.length; i++) {
       const line = lines[i].trim();
       if (!line) continue;
-
-      // Handle quoted CSV fields
       const cols = parseCSVLine(line);
       if (cols.length < 3) continue;
-
       const sigla = cols[0].trim().toUpperCase();
       const nome = cols[1].trim();
       const cliente = cols[2].trim();
-
       if (!sigla || !nome || !cliente) continue;
-
-      if (!result[sigla]) {
-        result[sigla] = { nome: nome, clientes: [] };
-      }
+      if (!result[sigla]) result[sigla] = { nome: nome, clientes: [] };
       result[sigla].clientes.push(cliente);
     }
     return result;
@@ -863,15 +797,10 @@
     return result;
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Load Data
-  // ─────────────────────────────────────────────────────────────────────────────
   async function loadData() {
     showLoading();
-
-    // Demo mode
     if (!SHEET_URL || SHEET_URL === 'SUA_URL_AQUI') {
-      await new Promise(r => setTimeout(r, 800)); // simulate loading
+      await new Promise(r => setTimeout(r, 800));
       estadosData = FALLBACK_DATA;
       dataSource = 'demo';
       document.getElementById('demo-banner').classList.add('visible');
@@ -880,7 +809,6 @@
       showGrid();
       return;
     }
-
     try {
       const response = await fetch(SHEET_URL);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -900,20 +828,14 @@
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Build Cards
-  // ─────────────────────────────────────────────────────────────────────────────
   function buildCards() {
     const grid = document.getElementById('states-grid');
     grid.innerHTML = '';
-
     const sortedKeys = Object.keys(estadosData).sort();
     let totalClientes = 0;
-
     sortedKeys.forEach((sigla, idx) => {
       const estado = estadosData[sigla];
       totalClientes += estado.clientes.length;
-
       const card = document.createElement('div');
       card.className = 'state-card';
       card.dataset.sigla = sigla;
@@ -927,34 +849,23 @@
       card.addEventListener('click', () => openDetail(sigla));
       grid.appendChild(card);
     });
-
-    // Update badge
     const totalEstados = sortedKeys.length;
     document.getElementById('total-badge').textContent =
       `${totalEstados} estado${totalEstados !== 1 ? 's' : ''} · ${totalClientes} cliente${totalClientes !== 1 ? 's' : ''}`;
-
-    // Update results count
     document.getElementById('results-count').textContent =
       `${totalEstados} estado${totalEstados !== 1 ? 's' : ''}`;
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Detail View
-  // ─────────────────────────────────────────────────────────────────────────────
   function openDetail(sigla) {
     const estado = estadosData[sigla];
     if (!estado) return;
-
-    // Mark selected card
     document.querySelectorAll('.state-card').forEach(c => c.classList.remove('selected'));
     const card = document.querySelector(`.state-card[data-sigla="${sigla}"]`);
     if (card) card.classList.add('selected');
-
     document.getElementById('detail-sigla').textContent = sigla;
     document.getElementById('detail-nome').textContent = estado.nome;
     document.getElementById('detail-count').textContent =
       `${estado.clientes.length} cliente${estado.clientes.length !== 1 ? 's' : ''} cadastrado${estado.clientes.length !== 1 ? 's' : ''}`;
-
     const list = document.getElementById('clients-list');
     list.innerHTML = '';
     estado.clientes.forEach((cliente, i) => {
@@ -970,7 +881,6 @@
       `;
       list.appendChild(li);
     });
-
     document.getElementById('grid-view').style.display = 'none';
     const detailView = document.getElementById('detail-view');
     detailView.style.display = 'block';
@@ -987,14 +897,10 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Search
-  // ─────────────────────────────────────────────────────────────────────────────
   document.getElementById('search-input').addEventListener('input', function () {
     const query = this.value.trim().toLowerCase();
     const cards = document.querySelectorAll('.state-card');
     let visible = 0;
-
     cards.forEach(card => {
       const sigla = card.dataset.sigla.toLowerCase();
       const nome = estadosData[card.dataset.sigla]?.nome.toLowerCase() || '';
@@ -1003,10 +909,8 @@
       card.classList.toggle('hidden', !match);
       if (match) visible++;
     });
-
     const noResults = document.getElementById('no-results');
     const resultsCount = document.getElementById('results-count');
-
     if (query && visible === 0) {
       noResults.classList.add('visible');
       document.getElementById('search-term').textContent = this.value.trim();
@@ -1019,9 +923,6 @@
     }
   });
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Init
-  // ─────────────────────────────────────────────────────────────────────────────
   loadData();
 </script>
 </body>
