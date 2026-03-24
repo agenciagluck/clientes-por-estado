@@ -1,0 +1,40 @@
+name: Atualizar HTML a partir da Planilha
+
+on:
+  push:
+    paths:
+      - "clientes_por_estado.xlsx"   # dispara SOMENTE quando a planilha for alterada
+
+jobs:
+  convert-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install pandas openpyxl
+
+      - name: Converter planilha para HTML
+        run: python convert_to_html.py
+
+      - name: Commit e push do HTML atualizado
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Auto: atualiza index.html via planilha"
+          git push
+
+      - name: Deploy no GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
