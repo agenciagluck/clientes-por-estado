@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<!-- DADOS GERADOS AUTOMATICAMENTE PELO SCRIPT convert_to_html.py -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clientes por Estado</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F8F9FA;
+    --white: #ffffff;
+    --indigo: #4F46E5;
+    --indigo-light: #EEF2FF;
+    --indigo-mid: #6366F1;
+    --text-primary: #1E1B4B;
+    --text-secondary: #6B7280;
+    --text-muted: #9CA3AF;
+    --border: #E5E7EB;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(79,70,229,0.12), 0 2px 6px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 40px rgba(79,70,229,0.18), 0 4px 12px rgba(0,0,0,0.08);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 40px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+
+  .header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .header-text h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .header-text h1 .dot {
+    width: 10px;
+    height: 10px;
+    background: var(--indigo);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .header-text p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-weight: 400;
+  }
+
+  .header-badge {
+    background: var(--indigo-light);
+    color: var(--indigo);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  /* ── SEARCH ── */
+  .search-wrap {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 40px;
+    position: sticky;
+    top: 97px;
+    z-index: 99;
+  }
+
+  .search-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .search-box {
+    position: relative;
+    flex: 1;
+    max-width: 380px;
+  }
+
+  .search-box svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 10px 14px 10px 42px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    background: var(--bg);
+    outline: none;
+    transition: var(--transition);
+  }
+
+  .search-box input:focus {
+    border-color: var(--indigo);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+  }
+
+  .search-box input::placeholder { color: var(--text-muted); }
+
+  .results-count {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    flex: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 32px 40px 40px;
+  }
+
+  /* ── GRID VIEW ── */
+  #grid-view { display: block; }
+
+  .states-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+
+  /* ── CARD ── */
+  .state-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 16px 18px;
+    cursor: pointer;
+    text-align: center;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.4s ease both;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .state-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--indigo-light) 0%, transparent 60%);
+    opacity: 0;
+    transition: var(--transition);
+    border-radius: var(--radius);
+  }
+
+  .state-card:hover {
+    border-color: var(--indigo);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+  }
+
+  .state-card:hover::before { opacity: 1; }
+
+  .state-card.selected {
+    border-color: var(--indigo);
+    background: var(--indigo-light);
+    box-shadow: var(--shadow-md);
+  }
+
+  .state-card.hidden { display: none; }
+
+  .card-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-sigla {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--indigo);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+    transition: var(--transition);
+  }
+
+  .state-card:hover .card-sigla { color: var(--indigo); transform: scale(1.05); }
+
+  .card-nome {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    line-height: 1.3;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-count {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--indigo);
+    background: var(--indigo-light);
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 4px;
+    position: relative;
+    z-index: 1;
+    transition: var(--transition);
+  }
+
+  .state-card:hover .card-count,
+  .state-card.selected .card-count {
+    background: var(--indigo);
+    color: var(--white);
+  }
+
+  /* ── DETAIL VIEW ── */
+  #detail-view {
+    display: none;
+    animation: fadeInRight 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  #detail-view.visible { display: block; }
+
+  .detail-panel {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .detail-header {
+    background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-mid) 100%);
+    padding: 32px 36px 28px;
+    color: var(--white);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .detail-header::after {
+    content: '';
+    position: absolute;
+    right: -30px;
+    top: -30px;
+    width: 160px;
+    height: 160px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+
+  .detail-header::before {
+    content: '';
+    position: absolute;
+    right: 40px;
+    bottom: -50px;
+    width: 120px;
+    height: 120px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .back-btn:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateX(-2px);
+  }
+
+  .detail-state-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .detail-sigla-badge {
+    width: 72px;
+    height: 72px;
+    background: rgba(255,255,255,0.18);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+
+  .detail-state-text h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .detail-state-text p {
+    font-size: 0.82rem;
+    opacity: 0.8;
+    margin-top: 4px;
+    font-weight: 400;
+  }
+
+  .detail-body {
+    padding: 28px 36px 32px;
+  }
+
+  .detail-body h3 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+
+  .clients-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .client-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+    animation: fadeInUp 0.3s ease both;
+  }
+
+  .client-item:hover {
+    background: var(--indigo-light);
+    border-color: rgba(79,70,229,0.2);
+    transform: translateX(3px);
+  }
+
+  .client-number {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    width: 18px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .client-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--white);
+    flex-shrink: 0;
+    letter-spacing: 0;
+  }
+
+  .client-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    flex: 1;
+  }
+
+  /* ── NO RESULTS ── */
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    display: none;
+  }
+
+  .no-results.visible { display: block; }
+
+  .no-results svg { margin-bottom: 12px; opacity: 0.4; }
+
+  .no-results p { font-size: 0.9rem; font-weight: 500; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    padding: 16px 40px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(24px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .states-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  @media (max-width: 860px) {
+    .header { padding: 20px 24px 18px; }
+    .search-wrap { padding: 12px 24px; top: 85px; }
+    .main { padding: 24px 24px 32px; }
+    .states-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .detail-header { padding: 24px 24px 20px; }
+    .detail-body { padding: 20px 24px 24px; }
+  }
+
+  @media (max-width: 560px) {
+    .header-inner { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .states-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .card-sigla { font-size: 1.5rem; }
+    .detail-state-info { flex-direction: column; align-items: flex-start; gap: 12px; }
+    footer { padding: 14px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-text">
+      <h1><span class="dot"></span> Clientes por Estado</h1>
+      <p>Clique em um estado para visualizar os clientes cadastrados</p>
+    </div>
+    <span class="header-badge" id="total-badge">270 clientes · 27 estados</span>
+  </div>
+</header>
+
+<!-- ── SEARCH ── -->
+<div class="search-wrap" id="search-wrap">
+  <div class="search-inner">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="search-input" placeholder="Buscar por estado ou sigla…" autocomplete="off">
+    </div>
+    <span class="results-count" id="results-count">27 estados</span>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- GRID VIEW -->
+  <div id="grid-view">
+    <div class="states-grid" id="states-grid"></div>
+    <div class="no-results" id="no-results">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <p>Nenhum estado encontrado para "<span id="search-term"></span>"</p>
+    </div>
+  </div>
+
+  <!-- DETAIL VIEW -->
+  <div id="detail-view">
+    <div class="detail-panel">
+      <div class="detail-header">
+        <button class="back-btn" id="back-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Voltar aos estados
+        </button>
+        <div class="detail-state-info">
+          <div class="detail-sigla-badge" id="detail-sigla"></div>
+          <div class="detail-state-text">
+            <h2 id="detail-nome"></h2>
+            <p id="detail-sub"></p>
+          </div>
+        </div>
+      </div>
+      <div class="detail-body">
+        <h3>Lista de clientes</h3>
+        <ul class="clients-list" id="clients-list"></ul>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  ⚙️ Dados sincronizados via planilha &nbsp;|&nbsp; Última atualização: <span id="last-update"></span>
+</footer>
+
+<script>
+const estadosData = {
+  "AC": { "nome": "Acre", "clientes": ["Ana Lima", "Bruno Farias", "Carla Mendes", "Diego Souza", "Elaine Rocha", "Felipe Nunes", "Gabriela Castro", "Henrique Alves", "Isabela Torres", "João Peixoto"] },
+  "AL": { "nome": "Alagoas", "clientes": ["Amanda Ferreira", "Bernardo Costa", "Cíntia Melo", "Daniel Brito", "Eduarda Lins", "Fábio Ramos", "Giovana Barros", "Hugo Cavalcante", "Iara Nascimento", "Júlio Moraes"] },
+  "AP": { "nome": "Amapá", "clientes": ["Alice Pantoja", "Bruno Lobato", "Cristina Viana", "David Macedo", "Elza Corrêa", "Fernando Guimarães", "Graça Figueiredo", "Hélio Andrade", "Iolanda Freitas", "Jonas Pereira"] },
+  "AM": { "nome": "Amazonas", "clientes": ["Adriana Leal", "Benedito Souza", "Claudia Monteiro", "Davi Amazonas", "Eva Ribeiro", "Francisco Teixeira", "Glória Nogueira", "Humberto Sales", "Iris Batista", "Jefferson Pinto"] },
+  "BA": { "nome": "Bahia", "clientes": ["Aline Bahia", "Carlos Santana", "Denise Araújo", "Eduardo Falcão", "Fernanda Queiroz", "Gustavo Leão", "Helena Vieira", "Igor Sampaio", "Juliana Carvalho", "Lucas Borges"] },
+  "CE": { "nome": "Ceará", "clientes": ["Antônia Medeiros", "Breno Aragão", "Cecília Fontes", "Danilo Ximenes", "Evelyn Saraiva", "Filipe Landim", "Geovana Bastos", "Hermes Lima", "Ingrid Pinheiro", "Jorge Sousa"] },
+  "DF": { "nome": "Distrito Federal", "clientes": ["Alexandre Nóbrega", "Beatriz Almeida", "Cláudio Martins", "Débora Fonseca", "Emerson Lopes", "Flávia Cunha", "Gilberto Matos", "Heloísa Rezende", "Ivan Rodrigues", "Jéssica Campos"] },
+  "ES": { "nome": "Espírito Santo", "clientes": ["Adriano Espíndola", "Bruna Pacheco", "Caio Zanetti", "Daniela Tristão", "Ernesto Vasconcelos", "Fernanda Zamprogno", "Gisele Frizera", "Halisson Barbosa", "Ingrid Moreira", "João Feu"] },
+  "GO": { "nome": "Goiás", "clientes": ["Alessandra Goiânia", "Bruno Jalles", "Cristiane Caiado", "Diones Veiga", "Emanuela Quirino", "Fabiano Lacerda", "Giovana Jardim", "Hilton Camargo", "Isadora Bueno", "Jonatan Cruz"] },
+  "MA": { "nome": "Maranhão", "clientes": ["Aldenir Marques", "Benedita Cutrim", "Conceição Veras", "Darlan Matos", "Ednalva Costa", "Fátima Lobato", "Gilmara Furtado", "Hélio Sarney", "Iramar Coelho", "Janete Muniz"] },
+  "MT": { "nome": "Mato Grosso", "clientes": ["Alaor Cuiabá", "Bruna Rondon", "Cleber Tanaka", "Danielle Parecis", "Ednaldo Sinop", "Fabiana Chapada", "Gilson Gaúcho", "Hilária Mato", "Ivone Barbosa", "Jader Campos"] },
+  "MS": { "nome": "Mato Grosso do Sul", "clientes": ["Alcides Campo", "Brenda Grande", "César Dourados", "Dulce Bonito", "Evandro Três Lagoas", "Fabíola Ponta Porã", "Geraldo Naviraí", "Helena Maracaju", "Ivana Coxim", "Josué Corumbá"] },
+  "MG": { "nome": "Minas Gerais", "clientes": ["Afonso Belo", "Brígida Contagem", "Cléber Uberlândia", "Dinalva Juiz de Fora", "Edmar Montes Claros", "Fátima Betim", "Gilmar Ibirité", "Herilda Divinópolis", "Iraci Sete Lagoas", "Jair Governador"] },
+  "PA": { "nome": "Pará", "clientes": ["Agenor Belém", "Benedita Marabá", "Célio Santarém", "Dorinha Castanhal", "Elias Ananindeua", "Fatinha Parauapebas", "Geovane Altamira", "Herivaldo Barcarena", "Iacy Tucuruí", "Jardel Abaetetuba"] },
+  "PB": { "nome": "Paraíba", "clientes": ["Aldenor João Pessoa", "Benedita Campina", "Ceilândia Cajazeiras", "Damião Patos", "Edna Guarabira", "Fátima Sousa", "Gildásio Bayeux", "Heraldo Santa Rita", "Inácio Cabedelo", "Jairo Monteiro"] },
+  "PR": { "nome": "Paraná", "clientes": ["Adriana Curitiba", "Benício Londrina", "Cátia Maringá", "Diogo Cascavel", "Eliete Foz", "Fabiano Ponta Grossa", "Giovana Guarapuava", "Henrique Paranaguá", "Ivete Araucária", "Jonas Campo Mourão"] },
+  "PE": { "nome": "Pernambuco", "clientes": ["Aldair Recife", "Benedita Caruaru", "Claudinho Olinda", "Diva Petrolina", "Erivaldo Paulista", "Fatinha Jaboatão", "Geísa Camaçari", "Hernando Garanhuns", "Irailda Cabo", "Jailton Vitória"] },
+  "PI": { "nome": "Piauí", "clientes": ["Adauto Teresina", "Benedita Parnaíba", "Cícero Floriano", "Dilma Picos", "Eurico Piripiri", "Fátima Barras", "Gilberto Oeiras", "Hermínia Campo Maior", "Iracema Esperantina", "Jairo Pedro II"] },
+  "RJ": { "nome": "Rio de Janeiro", "clientes": ["Alexandre Niterói", "Beatriz Duque", "Carlos Petrópolis", "Denise Nova Iguaçu", "Emerson Volta Redonda", "Fernanda Macaé", "Gustavo Campos", "Helena Cabo Frio", "Igor Angra", "Juliana Nilópolis"] },
+  "RN": { "nome": "Rio Grande do Norte", "clientes": ["Aécio Natal", "Betânia Mossoró", "Claudionor Parnamirim", "Diná Caicó", "Eliana Currais Novos", "Fátima Assu", "Gilmar Pau dos Ferros", "Hermano Nova Cruz", "Ivana São Gonçalo", "Jailma Macaíba"] },
+  "RS": { "nome": "Rio Grande do Sul", "clientes": ["Adriano Porto Alegre", "Betina Caxias", "Clóvis Pelotas", "Deise Canoas", "Erico Santa Maria", "Fabiane Novo Hamburgo", "Gilberto São Leopoldo", "Helena Passo Fundo", "Ivan Gravataí", "Jaqueline Viamão"] },
+  "RO": { "nome": "Rondônia", "clientes": ["Aldenir Porto Velho", "Bruna Ariquemes", "Cléber Ji-Paraná", "Dilma Cacoal", "Eduardo Vilhena", "Fabiana Rolim", "Gilson Jaru", "Heloísa Guajará", "Ivone Ouro Preto", "Joelma Pimenta"] },
+  "RR": { "nome": "Roraima", "clientes": ["Alcindo Boa Vista", "Betânia Rorainópolis", "Cleidimar Caracaraí", "Dilma Mucajaí", "Edmar Iracema", "Fátima Alto Alegre", "Gilberto Cantá", "Helenice Bonfim", "Irene Normandia", "Jailson Pacaraima"] },
+  "SC": { "nome": "Santa Catarina", "clientes": ["Adelar Florianópolis", "Betina Joinville", "Cláudio Blumenau", "Deise Chapecó", "Everton Itajaí", "Fabiana Lages", "Gilmar Criciúma", "Heloísa Jaraguá", "Ivan Balneário", "Jaqueline Tubarão"] },
+  "SP": { "nome": "São Paulo", "clientes": ["Alexandre São Paulo", "Beatriz Campinas", "Carlos Guarulhos", "Daniela Santo André", "Eduardo Ribeirão", "Fernanda São Bernardo", "Gustavo Osasco", "Helena Santos", "Igor Sorocaba", "Juliana Mauá"] },
+  "SE": { "nome": "Sergipe", "clientes": ["Adailton Aracaju", "Benedita Lagarto", "Claudia Itabaiana", "Dilma Estância", "Edmar Tobias", "Fátima Nossa Senhora", "Gilmar Simão Dias", "Helenise Propriá", "Iraci Carmópolis", "Jair Canindé"] },
+  "TO": { "nome": "Tocantins", "clientes": ["Adelmo Palmas", "Betânia Araguaína", "Claudionor Gurupi", "Dilma Porto Nacional", "Eduardo Paraíso", "Fabiana Colinas", "Gilson Guaraí", "Heloísa Dianópolis", "Ivone Miracema", "Jailma Formoso"] }
+};
+
+const avatarColors = [
+  '#4F46E5','#7C3AED','#DB2777','#DC2626','#D97706',
+  '#059669','#0891B2','#2563EB','#9333EA','#C2410C'
+];
+
+function getAvatarColor(index) {
+  return avatarColors[index % avatarColors.length];
+}
+
+function getInitial(name) {
+  return name.trim().charAt(0).toUpperCase();
+}
+
+function formatDate(d) {
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+// Set footer date
+document.getElementById('last-update').textContent = formatDate(new Date());
+
+const grid = document.getElementById('states-grid');
+const gridView = document.getElementById('grid-view');
+const detailView = document.getElementById('detail-view');
+const searchInput = document.getElementById('search-input');
+const resultsCount = document.getElementById('results-count');
+const noResults = document.getElementById('no-results');
+const searchWrap = document.getElementById('search-wrap');
+
+let selectedSigla = null;
+
+// Build cards
+const siglas = Object.keys(estadosData).sort();
+siglas.forEach((sigla, i) => {
+  const estado = estadosData[sigla];
+  const card = document.createElement('div');
+  card.className = 'state-card';
+  card.dataset.sigla = sigla;
+  card.dataset.nome = estado.nome.toLowerCase();
+  card.style.animationDelay = `${i * 0.03}s`;
+  card.innerHTML = `
+    <span class="card-icon">📍</span>
+    <span class="card-sigla">${sigla}</span>
+    <span class="card-nome">${estado.nome}</span>
+    <span class="card-count">${estado.clientes.length} clientes</span>
+  `;
+  card.addEventListener('click', () => openDetail(sigla));
+  grid.appendChild(card);
+});
+
+function openDetail(sigla) {
+  selectedSigla = sigla;
+  const estado = estadosData[sigla];
+
+  // Highlight selected card
+  document.querySelectorAll('.state-card').forEach(c => c.classList.remove('selected'));
+  const selCard = document.querySelector(`.state-card[data-sigla="${sigla}"]`);
+  if (selCard) selCard.classList.add('selected');
+
+  // Populate detail
+  document.getElementById('detail-sigla').textContent = sigla;
+  document.getElementById('detail-nome').textContent = estado.nome;
+  document.getElementById('detail-sub').textContent = `${estado.clientes.length} clientes cadastrados`;
+
+  const list = document.getElementById('clients-list');
+  list.innerHTML = '';
+  estado.clientes.forEach((nome, idx) => {
+    const li = document.createElement('li');
+    li.className = 'client-item';
+    li.style.animationDelay = `${idx * 0.04}s`;
+    li.innerHTML = `
+      <span class="client-number">${idx + 1}</span>
+      <div class="client-avatar" style="background:${getAvatarColor(idx)}">${getInitial(nome)}</div>
+      <span class="client-name">${nome}</span>
+    `;
+    list.appendChild(li);
+  });
+
+  // Switch views
+  gridView.style.display = 'none';
+  searchWrap.style.display = 'none';
+  detailView.classList.add('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function closeDetail() {
+  detailView.classList.remove('visible');
+  gridView.style.display = 'block';
+  searchWrap.style.display = 'block';
+  document.querySelectorAll('.state-card').forEach(c => c.classList.remove('selected'));
+  selectedSigla = null;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('back-btn').addEventListener('click', closeDetail);
+
+// Search
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  const cards = document.querySelectorAll('.state-card');
+  let visible = 0;
+
+  cards.forEach(card => {
+    const sigla = card.dataset.sigla.toLowerCase();
+    const nome = card.dataset.nome;
+    const match = sigla.includes(q) || nome.includes(q);
+    card.classList.toggle('hidden', !match);
+    if (match) visible++;
+  });
+
+  resultsCount.textContent = visible === 27 ? '27 estados' : `${visible} estado${visible !== 1 ? 's' : ''} encontrado${visible !== 1 ? 's' : ''}`;
+  noResults.classList.toggle('visible', visible === 0);
+  document.getElementById('search-term').textContent = searchInput.value.trim();
+});
+</script>
+</body>
+</html>
