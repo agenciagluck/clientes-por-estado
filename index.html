@@ -1,14 +1,3 @@
-<!--
-  🔗 CONFIGURAÇÃO DO GOOGLE SHEETS
-  Substitua a constante SHEET_URL no JavaScript pela URL da sua planilha publicada.
-  Como publicar: Planilha > Arquivo > Compartilhar > Publicar na web > CSV > Copiar link
-  
-  Formato esperado da planilha:
-  - Coluna A: Sigla do estado (ex: SP)
-  - Coluna B: Nome do estado (ex: São Paulo)
-  - Coluna C: Nome do cliente (ex: Alexandre São Paulo)
-  Cada linha = 1 cliente. Primeira linha pode ser cabeçalho (será ignorada automaticamente).
--->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -101,6 +90,49 @@
     padding: 6px 14px;
     border-radius: 20px;
     white-space: nowrap;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--indigo-light);
+    color: var(--indigo);
+    border: 1.5px solid rgba(79,70,229,0.2);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+  }
+
+  .refresh-btn:hover {
+    background: var(--indigo);
+    color: var(--white);
+    border-color: var(--indigo);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .refresh-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .refresh-btn svg {
+    transition: transform 0.5s ease;
+  }
+
+  .refresh-btn.spinning svg {
+    animation: spin 0.75s linear infinite;
   }
 
   .search-wrap {
@@ -535,6 +567,11 @@
     font-weight: 400;
   }
 
+  #footer-autorefresh {
+    color: var(--indigo);
+    font-weight: 500;
+  }
+
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes fadeInRight { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
 
@@ -564,7 +601,15 @@
       <h1><span class="dot"></span> Clientes por Estado</h1>
       <p>Selecione um estado para visualizar os clientes cadastrados</p>
     </div>
-    <div class="header-badge" id="total-badge">Carregando...</div>
+    <div class="header-actions">
+      <button class="refresh-btn" id="refresh-btn" onclick="manualRefresh()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        Atualizar
+      </button>
+      <div class="header-badge" id="total-badge">Carregando...</div>
+    </div>
   </div>
 </header>
 
@@ -659,6 +704,10 @@
     <div class="footer-sync-item">
       <span id="footer-update">Última atualização: —</span>
     </div>
+    <span style="color: var(--border);">|</span>
+    <div class="footer-sync-item">
+      <span id="footer-autorefresh">🔄 Atualização automática a cada 5 min</span>
+    </div>
   </div>
 </footer>
 
@@ -698,6 +747,9 @@
   let estadosData = {};
   let dataSource = 'loading';
   let lastUpdate = null;
+  let refreshTimer = null;
+
+  const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutos
 
   const avatarColors = [
     '#4F46E5','#7C3AED','#DB2777','#DC2626','#D97706',
@@ -734,6 +786,13 @@
     document.getElementById('loading-state').style.display = 'none';
     document.getElementById('error-state').classList.remove('visible');
     document.getElementById('grid-view').style.display = 'block';
+  }
+
+  function startAutoRefresh() {
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(() => {
+      loadData(true); // true = silent refresh (não mostra loading state)
+    }, REFRESH_INTERVAL);
   }
 
   function updateFooter() {
@@ -797,8 +856,21 @@
     return result;
   }
 
-  async function loadData() {
-    showLoading();
+  function manualRefresh() {
+    const btn = document.getElementById('refresh-btn');
+    btn.classList.add('spinning');
+    btn.disabled = true;
+    loadData().finally(() => {
+      setTimeout(() => {
+        btn.classList.remove('spinning');
+        btn.disabled = false;
+      }, 800);
+    });
+  }
+
+  async function loadData(silent = false) {
+    if (!silent) showLoading();
+
     if (!SHEET_URL || SHEET_URL === 'SUA_URL_AQUI') {
       await new Promise(r => setTimeout(r, 800));
       estadosData = FALLBACK_DATA;
@@ -807,24 +879,32 @@
       buildCards();
       updateFooter();
       showGrid();
+      startAutoRefresh();
       return;
     }
+
     try {
-      const response = await fetch(SHEET_URL);
+      // Cache-busting: adiciona timestamp para forçar dados frescos
+      const urlWithCacheBust = SHEET_URL + '&t=' + Date.now();
+      const response = await fetch(urlWithCacheBust);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const text = await response.text();
       if (!text || text.trim().length === 0) throw new Error('Planilha vazia');
-      estadosData = parseCSV(text);
-      if (Object.keys(estadosData).length === 0) throw new Error('Nenhum dado encontrado');
+      const newData = parseCSV(text);
+      if (Object.keys(newData).length === 0) throw new Error('Nenhum dado encontrado');
+      estadosData = newData;
       dataSource = 'sheets';
       document.getElementById('demo-banner').classList.remove('visible');
       buildCards();
       updateFooter();
       showGrid();
+      startAutoRefresh();
     } catch (err) {
       console.error('Erro ao carregar planilha:', err);
-      dataSource = 'error';
-      showError();
+      if (!silent) {
+        dataSource = 'error';
+        showError();
+      }
     }
   }
 
